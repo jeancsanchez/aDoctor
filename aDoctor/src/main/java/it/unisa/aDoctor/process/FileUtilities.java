@@ -13,6 +13,8 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
+
 public class FileUtilities {
 
     public static String readFile(String nomeFile) throws IOException {
@@ -140,8 +142,8 @@ public class FileUtilities {
 
         if (fList != null) {
             for (File file : fList) {
-                if (file.isFile()) {
-                    if (file.getName().contains(".java")) {
+                if (file.isFile()) {                		
+                	if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("java")) {
                         javaFiles.add(file);
                     }
                 } else if (file.isDirectory()) {

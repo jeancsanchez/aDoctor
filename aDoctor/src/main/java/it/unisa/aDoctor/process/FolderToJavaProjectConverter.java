@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.ArrayList;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -46,7 +48,7 @@ public class FolderToJavaProjectConverter {
                         for (File javaFile : javaFiles) {
                             // System.out.println(javaFile.getAbsolutePath());
                             CompilationUnit parsed = codeParser.createParser(FileUtilities.readFile(javaFile.getAbsolutePath()));
-                            TypeDeclaration typeDeclaration = (TypeDeclaration) parsed.types().get(0);
+                            AbstractTypeDeclaration typeDeclaration = (AbstractTypeDeclaration) parsed.types().get(0);
 
                             ArrayList<String> imports = new ArrayList<>();
 
@@ -144,8 +146,8 @@ public class FolderToJavaProjectConverter {
 
         if (fList != null) {
             for (File file : fList) {
-                if (file.isFile()) {
-                    if (file.getName().contains(".java")) {
+                if (file.isFile()) {                		
+                    if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("java")) {
                         javaFiles.add(file);
                     }
                 } else if (file.isDirectory()) {

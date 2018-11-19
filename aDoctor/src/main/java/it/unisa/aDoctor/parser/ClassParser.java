@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -94,14 +95,14 @@ public class ClassParser {
 
     }
 
-    public static ClassBean parse(TypeDeclaration pClassNode, String belongingPackage, List<String> imports) {
+    public static ClassBean parse(AbstractTypeDeclaration pClassNode, String belongingPackage, List<String> imports) {
         int numberOfGetterOrSetter = 0;
 
         // Instantiate the bean
         ClassBean classBean = new ClassBean();
 
-        if (pClassNode.getSuperclassType() != null) {
-            classBean.setSuperclass(pClassNode.getSuperclassType().toString());
+        if (pClassNode instanceof org.eclipse.jdt.core.dom.TypeDeclaration && ((org.eclipse.jdt.core.dom.TypeDeclaration)pClassNode).getSuperclassType() != null) {
+            classBean.setSuperclass(((org.eclipse.jdt.core.dom.TypeDeclaration)pClassNode).getSuperclassType().toString());
         } else {
             classBean.setSuperclass(null);
         }
