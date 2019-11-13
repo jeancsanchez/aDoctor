@@ -1,5 +1,8 @@
 package it.unisa.aDoctor.parser;
 
+import java.util.Map;
+
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
 
 /**
@@ -47,6 +50,9 @@ public class CodeParser {
         parser.setKind(ASTParser.K_COMPILATION_UNIT);
         parser.setSource(pClass.toCharArray()); // set source
         parser.setResolveBindings(true); // we need bindings later on
+        Map options = JavaCore.getOptions();
+        options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_6); //or newer version
+        parser.setCompilerOptions(options);        
         return (CompilationUnit) parser.createAST(null);
     }
 
