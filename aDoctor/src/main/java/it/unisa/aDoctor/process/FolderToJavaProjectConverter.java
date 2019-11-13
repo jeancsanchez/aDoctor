@@ -2,6 +2,7 @@ package it.unisa.aDoctor.process;
 
 import it.unisa.aDoctor.beans.PackageBean;
 import it.unisa.aDoctor.beans.ClassBean;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -48,76 +49,80 @@ public class FolderToJavaProjectConverter {
                         for (File javaFile : javaFiles) {
                             // System.out.println(javaFile.getAbsolutePath());
                             CompilationUnit parsed = codeParser.createParser(FileUtilities.readFile(javaFile.getAbsolutePath()));
-                            AbstractTypeDeclaration typeDeclaration = (AbstractTypeDeclaration) parsed.types().get(0);
+                            try {
+                                AbstractTypeDeclaration typeDeclaration = (AbstractTypeDeclaration) parsed.types().get(0);
 
-                            ArrayList<String> imports = new ArrayList<>();
+                                ArrayList<String> imports = new ArrayList<>();
 
-                            for (Object importedResource : parsed.imports()) {
-                                imports.add(importedResource.toString());
-                            }
-
-                            if (!FolderToJavaProjectConverter.isAlreadyCreated(
-                                    parsed.getPackage().getName().getFullyQualifiedName(), packages)) {
-
-                                PackageBean packageBean = new PackageBean();
-                                packageBean.setName(parsed.getPackage().getName().getFullyQualifiedName());
-
-                                ClassBean classBean = ClassParser.parse(typeDeclaration, packageBean.getName(),
-                                        imports);
-                                classBean.setPathToClass(javaFile.getAbsolutePath());
-
-                                InnerClassVisitor innerClassVisitor = new InnerClassVisitor();
-                                typeDeclaration.accept(innerClassVisitor);
-
-                                Collection<TypeDeclaration> innerTypes = innerClassVisitor.getInnerClasses();
-                                Collection<ClassBean> innerClasses = new ArrayList<>();
-                                for (TypeDeclaration innerType : innerTypes) {
-                                    //TypeDeclaration innerClassDeclaration = (TypeDeclaration) parsed.types().get(i);
-                                    ClassBean innerClass = ClassParser.parse(innerType,
-                                            packageBean.getName(), imports);
-
-                                    for (int i = 0; i < innerType.modifiers().size(); i++) {
-                                        if (("" + innerType.modifiers().get(i)).equals("static")) {
-                                            innerClass.setStatic(true);
-                                        }
-                                    }
-
-                                    innerClasses.add(innerClass);
+                                for (Object importedResource : parsed.imports()) {
+                                    imports.add(importedResource.toString());
                                 }
 
-                                classBean.setInnerClasses(innerClasses);
-                                packageBean.addClass(classBean);
-                                packages.add(packageBean);
+                                if (!FolderToJavaProjectConverter.isAlreadyCreated(
+                                        parsed.getPackage().getName().getFullyQualifiedName(), packages)) {
 
-                            } else {
-                                PackageBean packageBean = FolderToJavaProjectConverter.getPackageByName(
-                                        parsed.getPackage().getName().getFullyQualifiedName(), packages);
+                                    PackageBean packageBean = new PackageBean();
+                                    packageBean.setName(parsed.getPackage().getName().getFullyQualifiedName());
 
-                                ClassBean classBean = ClassParser.parse(typeDeclaration, packageBean.getName(),
-                                        imports);
-                                classBean.setPathToClass(javaFile.getAbsolutePath());
+                                    ClassBean classBean = ClassParser.parse(typeDeclaration, packageBean.getName(),
+                                            imports);
+                                    classBean.setPathToClass(javaFile.getAbsolutePath());
 
-                                InnerClassVisitor innerClassVisitor = new InnerClassVisitor();
-                                typeDeclaration.accept(innerClassVisitor);
+                                    InnerClassVisitor innerClassVisitor = new InnerClassVisitor();
+                                    typeDeclaration.accept(innerClassVisitor);
 
-                                Collection<TypeDeclaration> innerTypes = innerClassVisitor.getInnerClasses();
-                                Collection<ClassBean> innerClasses = new ArrayList<>();
-                                for (TypeDeclaration innerType : innerTypes) {
-                                    //TypeDeclaration innerClassDeclaration = (TypeDeclaration) parsed.types().get(i);
-                                    ClassBean innerClass = ClassParser.parse(innerType,
-                                            packageBean.getName(), imports);
+                                    Collection<TypeDeclaration> innerTypes = innerClassVisitor.getInnerClasses();
+                                    Collection<ClassBean> innerClasses = new ArrayList<>();
+                                    for (TypeDeclaration innerType : innerTypes) {
+                                        //TypeDeclaration innerClassDeclaration = (TypeDeclaration) parsed.types().get(i);
+                                        ClassBean innerClass = ClassParser.parse(innerType,
+                                                packageBean.getName(), imports);
 
-                                    for (int i = 0; i < innerType.modifiers().size(); i++) {
-                                        if (("" + innerType.modifiers().get(i)).equals("static")) {
-                                            innerClass.setStatic(true);
+                                        for (int i = 0; i < innerType.modifiers().size(); i++) {
+                                            if (("" + innerType.modifiers().get(i)).equals("static")) {
+                                                innerClass.setStatic(true);
+                                            }
                                         }
+
+                                        innerClasses.add(innerClass);
                                     }
 
-                                    innerClasses.add(innerClass);
-                                }
+                                    classBean.setInnerClasses(innerClasses);
+                                    packageBean.addClass(classBean);
+                                    packages.add(packageBean);
 
-                                classBean.setInnerClasses(innerClasses);
-                                packageBean.addClass(classBean);
+                                } else {
+                                    PackageBean packageBean = FolderToJavaProjectConverter.getPackageByName(
+                                            parsed.getPackage().getName().getFullyQualifiedName(), packages);
+
+                                    ClassBean classBean = ClassParser.parse(typeDeclaration, packageBean.getName(),
+                                            imports);
+                                    classBean.setPathToClass(javaFile.getAbsolutePath());
+
+                                    InnerClassVisitor innerClassVisitor = new InnerClassVisitor();
+                                    typeDeclaration.accept(innerClassVisitor);
+
+                                    Collection<TypeDeclaration> innerTypes = innerClassVisitor.getInnerClasses();
+                                    Collection<ClassBean> innerClasses = new ArrayList<>();
+                                    for (TypeDeclaration innerType : innerTypes) {
+                                        //TypeDeclaration innerClassDeclaration = (TypeDeclaration) parsed.types().get(i);
+                                        ClassBean innerClass = ClassParser.parse(innerType,
+                                                packageBean.getName(), imports);
+
+                                        for (int i = 0; i < innerType.modifiers().size(); i++) {
+                                            if (("" + innerType.modifiers().get(i)).equals("static")) {
+                                                innerClass.setStatic(true);
+                                            }
+                                        }
+
+                                        innerClasses.add(innerClass);
+                                    }
+
+                                    classBean.setInnerClasses(innerClasses);
+                                    packageBean.addClass(classBean);
+                                }
+                            } catch (IndexOutOfBoundsException e) {
+                                e.getMessage();
                             }
 
                         }
@@ -146,7 +151,7 @@ public class FolderToJavaProjectConverter {
 
         if (fList != null) {
             for (File file : fList) {
-                if (file.isFile()) {                		
+                if (file.isFile()) {
                     if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("java")) {
                         javaFiles.add(file);
                     }
