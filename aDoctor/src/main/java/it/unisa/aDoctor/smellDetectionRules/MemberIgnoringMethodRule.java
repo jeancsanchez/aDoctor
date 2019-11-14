@@ -7,7 +7,7 @@ public class MemberIgnoringMethodRule {
 
     public boolean isMemberIgnoringMethod(ClassBean pClass) {
         for (MethodBean methodBean : pClass.getMethods()) {
-            if (methodBean.getTextContent().contains(pClass.getName())) {
+            if (methodBean.isConstructor() || methodBean.isAndroidMethod()) {
                 continue;
             }
 

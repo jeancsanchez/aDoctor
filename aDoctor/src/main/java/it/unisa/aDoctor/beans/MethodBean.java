@@ -17,6 +17,8 @@ public class MethodBean {
     private Type returnType;
     private List<SingleVariableDeclaration> parameters;
     private boolean isStatic;
+    private boolean isAndroidMethod;
+    private boolean isConstructor;
 
     public MethodBean() {
         usedInstanceVariables = new ArrayList<InstanceVariableBean>();
@@ -133,4 +135,19 @@ public class MethodBean {
         return (this.getName().equals(((MethodBean) arg).getName()));
     }
 
+    public void isAndroidMethod(boolean isAndroidMethod) {
+        this.isAndroidMethod = isAndroidMethod;
+    }
+
+    public boolean isAndroidMethod() {
+        return isAndroidMethod;
+    }
+
+    public void isConstructor(boolean isConstructor) {
+        this.isConstructor = isConstructor;
+    }
+
+    public boolean isConstructor() {
+        return isConstructor;
+    }
 }
