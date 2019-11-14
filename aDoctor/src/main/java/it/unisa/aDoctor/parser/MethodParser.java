@@ -27,11 +27,23 @@ public class MethodParser {
         // Set the textual content
         methodBean.setTextContent(pMethodNode.toString());
 
+        methodBean.isConstructor(pMethodNode.isConstructor());
+
         if ((pMethodNode.toString().contains("static "))) {
             methodBean.setStatic(true);
         } else {
             methodBean.setStatic(false);
         }
+
+        // Verify if the method is overriding some Android method
+        if ((pMethodNode.toString().contains("@Override") || pMethodNode.toString().contains("Activity"))
+                || pMethodNode.toString().contains("Fragment") || pMethodNode.toString().contains("View")
+                || pMethodNode.toString().contains("Application")) {
+            methodBean.isAndroidMethod(true);
+        } else {
+            methodBean.isAndroidMethod(false);
+        }
+
 
         // Get the names in the method
         Collection<String> names = new HashSet<>();
